@@ -2,8 +2,8 @@ import type { PublicUser } from '@/types/index';
 import { User } from '@/models/User';
 import { hashPassword, comparePassword, signJWT } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
-import { registerSchema, loginSchema } from '@/lib/validation/authSchemas';
-import type { RegisterInput, LoginInput } from '@/lib/validation/authSchemas';
+import { registerSchema, loginSchema, updateProfileSchema } from '@/lib/validation/authSchemas';
+import type { RegisterInput, LoginInput, UpdateProfileInput } from '@/lib/validation/authSchemas';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -105,6 +105,49 @@ export async function getCurrentUser(userId: string): Promise<PublicUser | null>
   if (!user) {
     return null;
   }
+
+  return toPublicUser(user);
+}
+
+// ─── updateProfile ────────────────────────────────────────────────────────────
+
+/**
+ * Updates the authenticated user's name and/or password.
+ * Throws { code: 'VALIDATION_ERROR', issues } on invalid input.
+ * Throws { code: 'WRONG_PASSWORD' } when currentPassword does not match.
+ * Throws { code: 'USER_NOT_FOUND' } when the user no longer exists.
+ */
+export async function updateProfile(
+  userId: string,
+  data: UpdateProfileInput,
+): Promise<PublicUser> {
+  await connectDB();
+
+  const parsed = updateProfileSchema.safeParse(data);
+  if (!parsed.success) {
+    throw { code: 'VALIDATION_ERROR', issues: parsed.error.flatten().fieldErrors };
+  }
+
+  const { name, currentPassword, newPassword } = parsed.data;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw { code: 'USER_NOT_FOUND' };
+  }
+
+  if (newPassword) {
+    const matches = await comparePassword(currentPassword!, user.passwordHash);
+    if (!matches) {
+      throw { code: 'WRONG_PASSWORD' };
+    }
+    user.passwordHash = await hashPassword(newPassword);
+  }
+
+  if (name) {
+    user.name = name;
+  }
+
+  await user.save();
 
   return toPublicUser(user);
 }

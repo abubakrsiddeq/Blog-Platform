@@ -22,7 +22,7 @@ export async function toggleLike(
     throw { code: 'NOT_FOUND' };
   }
 
-  const alreadyLiked = post.likes.some((id) => id.toString() === userId);
+  const alreadyLiked = post.likes.some((id: { toString(): string }) => id.toString() === userId);
 
   let updatedPost;
   if (alreadyLiked) {

@@ -55,31 +55,52 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
   if (!post) notFound()
 
   return (
-    <div className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Post content */}
-      <PostDetail post={post} />
+    /* Outer page shell */
+    <div className="flex-1 w-full">
 
-      {/* Comments section */}
-      <section
-        aria-labelledby="comments-heading"
-        className="mt-12 pt-8 border-t border-[var(--border)]"
-      >
-        <h2
-          id="comments-heading"
-          className="text-base font-semibold text-[var(--foreground)] mb-6 flex items-center gap-2"
+      {/* ── Reading column ─────────────────────────────────────────────── */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+
+        <PostDetail post={post} />
+
+        {/* ── Comments ─────────────────────────────────────────────────── */}
+        <section
+          aria-labelledby="comments-heading"
+          className="mt-16"
         >
-          Comments
-          <span className="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 rounded-full bg-[var(--background-subtle)] border border-[var(--border)] text-xs font-medium text-[var(--foreground-muted)]">
-            {comments.length}
-          </span>
-        </h2>
+          {/* Section header */}
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
+            <h2
+              id="comments-heading"
+              className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest
+                         text-[var(--foreground-subtle)]"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Discussion
+              {comments.length > 0 && (
+                <span className="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5
+                                 rounded-full bg-[var(--brand)]/10 border border-[var(--brand)]/20
+                                 text-[11px] font-bold text-[var(--brand)]">
+                  {comments.length}
+                </span>
+              )}
+            </h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
+          </div>
 
-        <CommentList comments={comments} />
+          {/* Comment form */}
+          <div className="mb-8">
+            <CommentForm postId={id} />
+          </div>
 
-        <div className="mt-6">
-          <CommentForm postId={id} />
-        </div>
-      </section>
+          {/* Comment list */}
+          <CommentList comments={comments} />
+        </section>
+      </div>
     </div>
   )
 }

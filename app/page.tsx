@@ -34,19 +34,16 @@ function HomeContent({ searchParams }: HomePageProps) {
   const fetchPosts = useCallback(async (query: string, currentPage: number) => {
     setLoading(true)
     setError(null)
-
     try {
       const params = new URLSearchParams()
       params.set('page', String(currentPage))
       params.set('limit', '9')
       if (query.trim()) params.set('search', query.trim())
-
       const res = await fetch(`/api/posts?${params.toString()}`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         throw new Error(data.error ?? 'Failed to load posts')
       }
-
       const data: PostsResponse = await res.json()
       setPosts(data.posts)
       setTotalPages(data.totalPages)
@@ -80,111 +77,199 @@ function HomeContent({ searchParams }: HomePageProps) {
   }
 
   return (
-    <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[var(--foreground)] tracking-tight mb-1.5">
-          Latest Posts
-        </h1>
-        <p className="text-sm text-[var(--foreground-muted)]">
-          Discover stories, ideas, and expertise from our community.
-          {!loading && total > 0 && (
-            <span className="ml-1 text-[var(--foreground-subtle)]">
-              {total} post{total !== 1 ? 's' : ''}
-            </span>
-          )}
-        </p>
-      </div>
+    <main className="flex-1 w-full">
 
-      {/* Search bar */}
-      <form
-        onSubmit={handleSearch}
-        role="search"
-        className="mb-8 flex gap-2 w-full sm:max-w-lg"
-      >
-        <div className="relative flex-1">
-          <label htmlFor="search-input" className="sr-only">
-            Search posts
-          </label>
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <svg
-              aria-hidden="true"
-              className="h-4 w-4 text-[var(--foreground-subtle)]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input
-            id="search-input"
-            type="search"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Search posts…"
-            className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-[var(--border)] text-sm text-[var(--foreground)] bg-[var(--surface)] placeholder-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent transition-all duration-150"
-          />
-        </div>
-        <button
-          type="submit"
-          className="px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-[var(--brand)] hover:bg-[var(--brand-hover)] transition-colors duration-150 shadow-sm"
-        >
-          Search
-        </button>
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={handleClearSearch}
-            className="px-4 py-2.5 rounded-lg text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-[var(--background-subtle)] transition-colors duration-150"
-          >
-            Clear
-          </button>
-        )}
-      </form>
+      {/* ── Hero Section ─────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden">
+        {/* Grid background */}
+        <div className="absolute inset-0 hero-grid" aria-hidden="true" />
 
-      {/* Active search indicator */}
-      {searchQuery && !loading && (
-        <p className="mb-5 text-sm text-[var(--foreground-muted)]">
-          Results for{' '}
-          <span className="font-semibold text-[var(--foreground)]">
-            &ldquo;{searchQuery}&rdquo;
-          </span>
-          {' '}— {total} post{total !== 1 ? 's' : ''} found
-        </p>
-      )}
-
-      {/* Content */}
-      {loading ? (
-        <div className="flex justify-center items-center py-28" aria-label="Loading posts">
-          <LoadingSpinner size="lg" />
-        </div>
-      ) : error ? (
+        {/* Radial glow blobs */}
         <div
-          role="alert"
-          className="flex flex-col items-center justify-center py-20 text-center"
-        >
-          <div className="h-12 w-12 rounded-2xl bg-[var(--error-subtle)] border border-[var(--error)]/20 flex items-center justify-center mb-4">
-            <svg className="h-5 w-5 text-[var(--error)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <p className="text-sm font-medium text-[var(--foreground)] mb-1">{error}</p>
-          <button
-            onClick={() => fetchPosts(searchQuery, page)}
-            className="mt-2 text-sm font-medium text-[var(--brand)] hover:underline"
-          >
-            Try again
-          </button>
-        </div>
-      ) : (
-        <PostList
-          posts={posts}
-          page={page}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
+          aria-hidden="true"
+          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full
+                     bg-[var(--brand)]/10 blur-[100px] animate-glow pointer-events-none"
         />
-      )}
+        <div
+          aria-hidden="true"
+          className="absolute top-10 -left-20 w-[300px] h-[300px] rounded-full
+                     bg-violet-500/8 blur-[80px] pointer-events-none"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute top-10 -right-20 w-[300px] h-[300px] rounded-full
+                     bg-sky-500/8 blur-[80px] pointer-events-none"
+        />
+
+        {/* Content */}
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--brand)]/30 bg-[var(--brand)]/5 text-xs font-medium text-[var(--brand)] mb-6 animate-fade-in">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--brand)] opacity-75" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[var(--brand)]" />
+            </span>
+            Community stories &amp; ideas
+          </div>
+
+          {/* Headline */}
+          <h1
+            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5 animate-slide-up"
+            style={{ animationDelay: '60ms' }}
+          >
+            <span className="text-[var(--foreground)]">Explore the </span>
+            <span className="text-gradient-shimmer">Future of Ideas</span>
+          </h1>
+
+          {/* Sub-headline */}
+          <p
+            className="text-base sm:text-lg text-[var(--foreground-muted)] max-w-xl mx-auto mb-10 leading-relaxed animate-slide-up"
+            style={{ animationDelay: '120ms' }}
+          >
+            Discover stories, deep dives, and expertise from writers shaping tomorrow.
+            {!loading && total > 0 && (
+              <span className="ml-1 font-semibold text-[var(--brand)]">
+                {total} post{total !== 1 ? 's' : ''} published.
+              </span>
+            )}
+          </p>
+
+          {/* Search bar */}
+          <form
+            onSubmit={handleSearch}
+            role="search"
+            className="relative flex items-center max-w-xl mx-auto animate-slide-up"
+            style={{ animationDelay: '180ms' }}
+          >
+            {/* Glow ring */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 rounded-2xl bg-[var(--brand)]/20 blur-md -z-10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"
+            />
+
+            <label htmlFor="search-input" className="sr-only">Search posts</label>
+
+            {/* Search icon */}
+            <div className="absolute left-4 flex items-center pointer-events-none">
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4 text-[var(--foreground-subtle)]"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+
+            <input
+              id="search-input"
+              type="search"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Search posts, topics, authors…"
+              className="w-full pl-11 pr-36 py-3.5 rounded-2xl border border-[var(--border)]
+                         bg-[var(--surface)] text-sm text-[var(--foreground)]
+                         placeholder-[var(--foreground-subtle)]
+                         focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/50
+                         focus:border-[var(--brand)]/50
+                         shadow-[var(--shadow-md)] transition-all duration-200"
+            />
+
+            <div className="absolute right-2 flex items-center gap-1.5">
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="px-3 py-1.5 rounded-xl text-xs font-medium
+                             text-[var(--foreground-muted)] hover:text-[var(--foreground)]
+                             hover:bg-[var(--background-subtle)] transition-colors duration-150"
+                >
+                  Clear
+                </button>
+              )}
+              <button
+                type="submit"
+                className="px-4 py-1.5 rounded-xl text-sm font-semibold text-white
+                           bg-[var(--brand)] hover:bg-[var(--brand-hover)]
+                           transition-colors duration-150 shadow-sm glow-brand-sm"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+
+          {/* Active search indicator */}
+          {searchQuery && !loading && (
+            <p className="mt-4 text-sm text-[var(--foreground-muted)] animate-fade-in">
+              Results for{' '}
+              <span className="font-semibold text-[var(--foreground)]">
+                &ldquo;{searchQuery}&rdquo;
+              </span>
+              {' '}— {total} post{total !== 1 ? 's' : ''} found
+            </p>
+          )}
+        </div>
+
+        {/* Bottom fade */}
+        <div
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 right-0 h-16
+                     bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none"
+        />
+      </section>
+
+      {/* ── Posts Section ────────────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+
+        {/* Section label */}
+        {!searchQuery && (
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-[var(--foreground-subtle)]">
+              Latest
+            </span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex justify-center items-center py-28" aria-label="Loading posts">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-[var(--brand)]/20 blur-xl animate-glow" />
+              <LoadingSpinner size="lg" />
+            </div>
+          </div>
+        ) : error ? (
+          <div
+            role="alert"
+            className="flex flex-col items-center justify-center py-20 text-center"
+          >
+            <div className="h-14 w-14 rounded-2xl bg-[var(--error-subtle)] border border-[var(--error)]/20
+                            flex items-center justify-center mb-4 shadow-[var(--shadow-md)]">
+              <svg className="h-6 w-6 text-[var(--error)]" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-sm font-medium text-[var(--foreground)] mb-1">{error}</p>
+            <button
+              onClick={() => fetchPosts(searchQuery, page)}
+              className="mt-2 text-sm font-medium text-[var(--brand)] hover:underline"
+            >
+              Try again
+            </button>
+          </div>
+        ) : (
+          <PostList
+            posts={posts}
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
+      </section>
     </main>
   )
 }

@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { createPostSchema } from '@/lib/validation/postSchemas';
-import { createPost, listPosts, listPostsByAuthor } from '@/lib/services/postService';
+import { createPost, listPosts, listPostsByAuthor, searchPostsByAuthor } from '@/lib/services/postService';
 import { searchPosts } from '@/lib/services/searchService';
 
 // ─── GET /api/posts ───────────────────────────────────────────────────────────
@@ -30,7 +30,9 @@ export async function GET(request: NextRequest): Promise<Response> {
       if (!userId) {
         return Response.json({ error: 'Unauthorised' }, { status: 401 });
       }
-      const result = await listPostsByAuthor(userId, page, limit);
+      const result = search
+        ? await searchPostsByAuthor(userId, search, page, limit)
+        : await listPostsByAuthor(userId, page, limit);
       return Response.json(result, { status: 200 });
     }
 

@@ -126,6 +126,57 @@ export async function listPostsByAuthor(
   };
 }
 
+// ─── searchPostsByAuthor ──────────────────────────────────────────────────────
+
+/**
+ * Full-text search over all posts (draft + published) owned by the given author.
+ * Falls back to a case-insensitive regex title/excerpt match when the $text
+ * index returns no results (e.g. single-character queries).
+ *
+ * Requirements: 12.1
+ */
+export async function searchPostsByAuthor(
+  authorId: string,
+  query: string,
+  page: number,
+  limit: number,
+): Promise<{
+  posts: IPost[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}> {
+  await connectDB();
+
+  const skip = (page - 1) * limit;
+
+  // Use regex search on title and excerpt — works for all query lengths
+  // and doesn't require the $text index (which only matches whole words).
+  const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+  const filter = {
+    author: authorId,
+    $or: [{ title: regex }, { excerpt: regex }, { content: regex }],
+  };
+
+  const [posts, total] = await Promise.all([
+    Post.find(filter)
+      .sort({ createdAt: -1 })
+      .populate('author', 'name')
+      .skip(skip)
+      .limit(limit),
+    Post.countDocuments(filter),
+  ]);
+
+  return {
+    posts,
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
 // ─── getPostById ──────────────────────────────────────────────────────────────
 
 /**

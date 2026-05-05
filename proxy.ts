@@ -7,8 +7,6 @@ import { verifyJWT } from '@/lib/auth';
  *   - POST /api/posts
  *   - PUT or DELETE /api/posts/:id
  *   - POST /api/upload (any sub-path)
- *
- * Requirements: 4.3, 4.4
  */
 function isAuthorOnlyRoute(method: string, pathname: string): boolean {
   if (method === 'POST' && pathname === '/api/posts') {
@@ -30,22 +28,65 @@ function isAuthorOnlyRoute(method: string, pathname: string): boolean {
 }
 
 /**
- * Next.js Proxy — runs on the Node.js runtime.
+ * Returns true for routes that are publicly accessible (no auth needed).
+ * GET /api/posts and GET /api/posts/:id are public.
+ * GET /api/comments/:postId is also public.
+ */
+function isPublicRoute(method: string, pathname: string): boolean {
+  // Public: list posts
+  if (method === 'GET' && pathname === '/api/posts') {
+    return true;
+  }
+
+  // Public: single post view
+  if (method === 'GET' && /^\/api\/posts\/[^/]+$/.test(pathname)) {
+    return true;
+  }
+
+  // Public: read comments for a post
+  if (method === 'GET' && /^\/api\/comments\/[^/]+$/.test(pathname)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Next.js Middleware — runs on the Edge runtime.
  *
  * Protected paths: /api/posts/*, /api/comments/*, /api/upload/*, /dashboard/*
- * Public paths:    /api/auth/* (not matched by the config below)
+ * Public paths:    /api/auth/*, GET /api/posts, GET /api/posts/:id,
+ *                  GET /api/comments/:postId
  *
  * Flow:
- *  1. Read the JWT from the `token` HTTP-only cookie.
- *  2. Verify the JWT with verifyJWT().
- *  3. If absent or invalid → 401 Unauthorised.
- *  4. If valid, attach x-user-id and x-user-role request headers.
- *  5. If the route is author-only and the user is a reader → 403 Forbidden.
- *
- * Requirements: 4.1, 4.2, 4.3, 4.4
+ *  1. If the route is public, forward the request (optionally attaching user
+ *     identity if a valid token is present, so draft-post access works).
+ *  2. Read the JWT from the `token` HTTP-only cookie.
+ *  3. Verify the JWT with verifyJWT().
+ *  4. If absent or invalid → 401 Unauthorised.
+ *  5. If valid, attach x-user-id and x-user-role request headers.
+ *  6. If the route is author-only and the user is a reader → 403 Forbidden.
  */
 export function proxy(request: NextRequest): NextResponse {
+  const { pathname } = request.nextUrl;
+  const { method } = request;
+
   const token = request.cookies.get('token')?.value;
+
+  // For public routes, still try to attach user identity (needed for draft
+  // post access by the owning author), but never block unauthenticated access.
+  if (isPublicRoute(method, pathname)) {
+    if (token) {
+      const payload = verifyJWT(token);
+      if (payload) {
+        const requestHeaders = new Headers(request.headers);
+        requestHeaders.set('x-user-id', payload.sub);
+        requestHeaders.set('x-user-role', payload.role);
+        return NextResponse.next({ request: { headers: requestHeaders } });
+      }
+    }
+    return NextResponse.next();
+  }
 
   // No token → 401
   if (!token) {
@@ -58,9 +99,6 @@ export function proxy(request: NextRequest): NextResponse {
   if (!payload) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
   }
-
-  const { pathname } = request.nextUrl;
-  const { method } = request;
 
   // Role-based check for author-only routes
   if (isAuthorOnlyRoute(method, pathname) && payload.role === 'reader') {
