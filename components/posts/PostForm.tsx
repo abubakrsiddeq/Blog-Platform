@@ -246,7 +246,6 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
     const e: FormErrors = {}
     if (!title.trim()) e.title = 'Title is required'
     if (!content.trim() || content === '<p></p>') e.content = 'Content is required'
-    if (!image.trim()) e.image = 'Cover image is required'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -328,7 +327,7 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
       {/* Cover image */}
       <div className="space-y-1.5">
         <label className="block text-sm font-medium text-[var(--foreground)]">
-          Cover image <span aria-hidden="true" className="text-[var(--error)]">*</span>
+          Cover image <span className="text-xs text-[var(--foreground-muted)] font-normal">(optional)</span>
         </label>
         <CoverUploader value={image} onChange={setImage} error={errors.image} />
       </div>

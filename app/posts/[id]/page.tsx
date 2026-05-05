@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import PostDetail from '@/components/posts/PostDetail'
 import CommentList from '@/components/comments/CommentList'
 import CommentForm from '@/components/comments/CommentForm'
+import { getPostById } from '@/lib/services/postService'
+import { getCommentsByPost } from '@/lib/services/commentService'
 
 interface PostDetailPageProps {
   params: Promise<{ id: string }>
@@ -27,22 +29,36 @@ interface CommentData {
 
 async function getPost(id: string): Promise<PostData | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/posts/${id}`, { cache: 'no-store' })
-    if (res.status === 404 || res.status === 403) return null
-    if (!res.ok) return null
-    return res.json()
-  } catch {
+    const post = await getPostById(id)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return JSON.parse(JSON.stringify(post)) as PostData
+  } catch (err: unknown) {
+    if (
+      err !== null &&
+      typeof err === 'object' &&
+      'code' in err &&
+      ((err as { code: string }).code === 'NOT_FOUND' ||
+        (err as { code: string }).code === 'FORBIDDEN')
+    ) {
+      return null
+    }
+    // CastError (invalid ObjectId) → treat as not found
+    if (
+      err !== null &&
+      typeof err === 'object' &&
+      'name' in err &&
+      (err as { name: string }).name === 'CastError'
+    ) {
+      return null
+    }
     return null
   }
 }
 
 async function getComments(postId: string): Promise<CommentData[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/comments/${postId}`, { cache: 'no-store' })
-    if (!res.ok) return []
-    return res.json()
+    const comments = await getCommentsByPost(postId)
+    return JSON.parse(JSON.stringify(comments)) as CommentData[]
   } catch {
     return []
   }

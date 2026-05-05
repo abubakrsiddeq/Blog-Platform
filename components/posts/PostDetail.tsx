@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useAuth } from '@/components/providers/AuthProvider'
@@ -46,14 +46,27 @@ function readingTime(html: string): number {
 
 export default function PostDetail({ post }: PostDetailProps) {
   const { state } = useAuth()
+  const { user } = state
   const [likeCount, setLikeCount] = useState(post.likes.length)
   const [liked, setLiked] = useState(false)
   const [isLiking, setIsLiking] = useState(false)
   const [toast, setToast] = useState<ToastState | null>(null)
 
+  // Once auth is resolved, check if the user already liked this post
+  useEffect(() => {
+    if (user) {
+      setLiked(post.likes.includes(user.id))
+    }
+  }, [user, post.likes])  // Once auth is resolved, check if the user already liked this post
+  useEffect(() => {
+    if (user) {
+      setLiked(post.likes.includes(user.id))
+    }
+  }, [user, post.likes])
+
   const authorName = getAuthorName(post.author)
   const formattedDate = formatDate(post.createdAt)
-  const isAuthenticated = !!state.user
+  const isAuthenticated = !!user
   const initials = authorName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
   const mins = readingTime(post.content)
 
