@@ -30,7 +30,7 @@ function isAuthorOnlyRoute(method: string, pathname: string): boolean {
 }
 
 /**
- * Next.js Middleware — runs on the Edge runtime.
+ * Next.js Proxy — runs on the Node.js runtime.
  *
  * Protected paths: /api/posts/*, /api/comments/*, /api/upload/*, /dashboard/*
  * Public paths:    /api/auth/* (not matched by the config below)
@@ -44,7 +44,7 @@ function isAuthorOnlyRoute(method: string, pathname: string): boolean {
  *
  * Requirements: 4.1, 4.2, 4.3, 4.4
  */
-export function middleware(request: NextRequest): NextResponse {
+export function proxy(request: NextRequest): NextResponse {
   const token = request.cookies.get('token')?.value;
 
   // No token → 401

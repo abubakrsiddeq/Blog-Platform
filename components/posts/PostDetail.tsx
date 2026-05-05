@@ -40,31 +40,38 @@ function formatDate(dateStr: string): string {
 export default function PostDetail({ post }: PostDetailProps) {
   const { state } = useAuth()
   const [likeCount, setLikeCount] = useState(post.likes.length)
+  const [liked, setLiked] = useState(false)
   const [isLiking, setIsLiking] = useState(false)
   const [toast, setToast] = useState<ToastState | null>(null)
 
   const authorName = getAuthorName(post.author)
   const formattedDate = formatDate(post.createdAt)
   const isAuthenticated = !!state.user
+  const initials = authorName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
 
   async function handleLike() {
     if (isLiking) return
     const previousCount = likeCount
-    setLikeCount((prev) => prev + 1)
+    const previousLiked = liked
+    setLikeCount((prev) => prev + (liked ? -1 : 1))
+    setLiked((prev) => !prev)
     setIsLiking(true)
 
     try {
       const res = await fetch(`/api/posts/${post._id}/like`, { method: 'POST' })
       if (!res.ok) {
         setLikeCount(previousCount)
+        setLiked(previousLiked)
         const data = await res.json().catch(() => ({}))
         setToast({ message: data.error ?? 'Failed to like post', type: 'error' })
         return
       }
       const data: { likes: number; liked: boolean } = await res.json()
       setLikeCount(data.likes)
+      setLiked(data.liked)
     } catch {
       setLikeCount(previousCount)
+      setLiked(previousLiked)
       setToast({ message: 'Network error. Please try again.', type: 'error' })
     } finally {
       setIsLiking(false)
@@ -72,49 +79,69 @@ export default function PostDetail({ post }: PostDetailProps) {
   }
 
   return (
-    <article className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
-        {post.title}
-      </h1>
-
-      <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mb-6">
-        <span className="font-medium text-gray-700 dark:text-gray-300">{authorName}</span>
-        <span aria-hidden="true">·</span>
-        <time dateTime={post.createdAt}>{formattedDate}</time>
-      </div>
-
+    <article className="max-w-3xl mx-auto">
+      {/* Hero image */}
       {post.image && (
-        <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-8 bg-gray-100 dark:bg-gray-800">
+        <div className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden mb-8 bg-[var(--background-subtle)]">
           <Image
             src={post.image}
             alt={`Cover image for ${post.title}`}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 768px"
+            priority
           />
         </div>
       )}
 
+      {/* Title */}
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--foreground)] leading-tight tracking-tight mb-5">
+        {post.title}
+      </h1>
+
+      {/* Author + meta */}
+      <div className="flex items-center gap-3 mb-8 pb-6 border-b border-[var(--border)]">
+        <div className="h-9 w-9 rounded-full bg-[var(--brand-subtle)] border border-[var(--border)] flex items-center justify-center shrink-0">
+          <span className="text-xs font-bold text-[var(--brand)]">{initials}</span>
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-[var(--foreground)]">{authorName}</p>
+          <time dateTime={post.createdAt} className="text-xs text-[var(--foreground-muted)]">
+            {formattedDate}
+          </time>
+        </div>
+      </div>
+
+      {/* Content */}
       <div
-        className="prose prose-gray dark:prose-invert max-w-none mb-8"
+        className="prose max-w-none mb-10"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
 
+      {/* Like button */}
       {isAuthenticated && (
-        <div className="flex items-center gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-3 pt-6 border-t border-[var(--border)]">
           <button
             onClick={handleLike}
             disabled={isLiking}
-            aria-label={`Like this post (${likeCount} like${likeCount !== 1 ? 's' : ''})`}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
-              bg-red-50 text-red-600 hover:bg-red-100
-              dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
-              disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            aria-label={`${liked ? 'Unlike' : 'Like'} this post (${likeCount} like${likeCount !== 1 ? 's' : ''})`}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed ${
+              liked
+                ? 'bg-rose-500 border-rose-500 text-white shadow-sm'
+                : 'bg-[var(--surface)] border-[var(--border)] text-[var(--foreground-muted)] hover:border-rose-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30'
+            }`}
           >
-            <svg aria-hidden="true" className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg
+              aria-hidden="true"
+              className={`h-4 w-4 transition-transform duration-150 ${liked ? 'scale-110' : ''}`}
+              fill={liked ? 'currentColor' : 'none'}
+              viewBox="0 0 20 20"
+              stroke="currentColor"
+              strokeWidth={liked ? 0 : 1.5}
+            >
               <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
             </svg>
-            {likeCount} {likeCount === 1 ? 'Like' : 'Likes'}
+            <span>{likeCount} {likeCount === 1 ? 'Like' : 'Likes'}</span>
           </button>
         </div>
       )}

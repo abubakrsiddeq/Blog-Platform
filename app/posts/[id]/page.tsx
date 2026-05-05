@@ -27,21 +27,10 @@ interface CommentData {
 
 async function getPost(id: string): Promise<PostData | null> {
   try {
-    // Use absolute URL for server-side fetch in Next.js App Router
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/posts/${id}`, {
-      // Do not cache — post content may change
-      cache: 'no-store',
-    })
-
-    if (res.status === 404 || res.status === 403) {
-      return null
-    }
-
-    if (!res.ok) {
-      return null
-    }
-
+    const res = await fetch(`${baseUrl}/api/posts/${id}`, { cache: 'no-store' })
+    if (res.status === 404 || res.status === 403) return null
+    if (!res.ok) return null
     return res.json()
   } catch {
     return null
@@ -51,12 +40,8 @@ async function getPost(id: string): Promise<PostData | null> {
 async function getComments(postId: string): Promise<CommentData[]> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/comments/${postId}`, {
-      cache: 'no-store',
-    })
-
+    const res = await fetch(`${baseUrl}/api/comments/${postId}`, { cache: 'no-store' })
     if (!res.ok) return []
-
     return res.json()
   } catch {
     return []
@@ -65,36 +50,33 @@ async function getComments(postId: string): Promise<CommentData[]> {
 
 export default async function PostDetailPage({ params }: PostDetailPageProps) {
   const { id } = await params
-
   const [post, comments] = await Promise.all([getPost(id), getComments(id)])
 
-  if (!post) {
-    notFound()
-  }
+  if (!post) notFound()
 
   return (
-    <div className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Post content */}
       <PostDetail post={post} />
 
       {/* Comments section */}
       <section
         aria-labelledby="comments-heading"
-        className="max-w-3xl mx-auto px-4 sm:px-6 mt-12 border-t border-gray-200 dark:border-gray-700 pt-8"
+        className="mt-12 pt-8 border-t border-[var(--border)]"
       >
         <h2
           id="comments-heading"
-          className="text-xl font-semibold text-gray-900 dark:text-white mb-6"
+          className="text-base font-semibold text-[var(--foreground)] mb-6 flex items-center gap-2"
         >
-          Comments{' '}
-          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-            ({comments.length})
+          Comments
+          <span className="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 rounded-full bg-[var(--background-subtle)] border border-[var(--border)] text-xs font-medium text-[var(--foreground-muted)]">
+            {comments.length}
           </span>
         </h2>
 
         <CommentList comments={comments} />
 
-        <div className="mt-8">
+        <div className="mt-6">
           <CommentForm postId={id} />
         </div>
       </section>

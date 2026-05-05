@@ -4,9 +4,9 @@ interface LoadingSpinnerProps {
 }
 
 const sizeClasses = {
-  sm: 'h-4 w-4 border-2',
-  md: 'h-8 w-8 border-2',
-  lg: 'h-12 w-12 border-4',
+  sm: 'h-3.5 w-3.5 border-[1.5px]',
+  md: 'h-5 w-5 border-2',
+  lg: 'h-8 w-8 border-2',
 }
 
 export default function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerProps) {
@@ -15,7 +15,7 @@ export default function LoadingSpinner({ size = 'md', className = '' }: LoadingS
       role="status"
       aria-label="Loading"
       className={`
-        inline-block rounded-full border-gray-300 border-t-blue-600
+        inline-block rounded-full border-[var(--border-strong)] border-t-[var(--brand)]
         animate-spin
         ${sizeClasses[size]}
         ${className}

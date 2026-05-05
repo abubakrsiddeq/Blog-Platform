@@ -9,7 +9,6 @@ interface PaginationProps {
 export default function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null
 
-  // Build page number array with ellipsis logic
   function getPageNumbers(): (number | 'ellipsis-start' | 'ellipsis-end')[] {
     if (totalPages <= 7) {
       return Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -34,20 +33,22 @@ export default function Pagination({ page, totalPages, onPageChange }: Paginatio
 
   const pageNumbers = getPageNumbers()
 
+  const btnBase =
+    'inline-flex items-center justify-center h-8 min-w-[2rem] px-2 rounded-lg text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]'
+
   return (
-    <nav aria-label="Pagination" className="flex items-center justify-center gap-1 mt-6">
+    <nav aria-label="Pagination" className="flex items-center justify-center gap-1 mt-8">
       {/* Previous */}
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
         aria-label="Go to previous page"
-        className="px-3 py-2 rounded-md text-sm font-medium
-          text-gray-700 dark:text-gray-300
-          hover:bg-gray-100 dark:hover:bg-gray-700
-          disabled:opacity-40 disabled:cursor-not-allowed
-          transition-colors"
+        className={`${btnBase} gap-1 px-3 text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--background-subtle)] disabled:opacity-30 disabled:cursor-not-allowed`}
       >
-        ← Prev
+        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>Prev</span>
       </button>
 
       {/* Page numbers */}
@@ -57,7 +58,7 @@ export default function Pagination({ page, totalPages, onPageChange }: Paginatio
             <span
               key={p}
               aria-hidden="true"
-              className="px-3 py-2 text-gray-500 dark:text-gray-400 text-sm select-none"
+              className="h-8 w-8 flex items-center justify-center text-[var(--foreground-subtle)] text-sm select-none"
             >
               …
             </span>
@@ -71,14 +72,11 @@ export default function Pagination({ page, totalPages, onPageChange }: Paginatio
             onClick={() => onPageChange(p)}
             aria-label={`Go to page ${p}`}
             aria-current={isActive ? 'page' : undefined}
-            className={`
-              px-3 py-2 rounded-md text-sm font-medium transition-colors
-              ${
-                isActive
-                  ? 'bg-blue-600 text-white cursor-default'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }
-            `}
+            className={`${btnBase} ${
+              isActive
+                ? 'bg-[var(--brand)] text-white shadow-sm cursor-default'
+                : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--background-subtle)]'
+            }`}
           >
             {p}
           </button>
@@ -90,13 +88,12 @@ export default function Pagination({ page, totalPages, onPageChange }: Paginatio
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
         aria-label="Go to next page"
-        className="px-3 py-2 rounded-md text-sm font-medium
-          text-gray-700 dark:text-gray-300
-          hover:bg-gray-100 dark:hover:bg-gray-700
-          disabled:opacity-40 disabled:cursor-not-allowed
-          transition-colors"
+        className={`${btnBase} gap-1 px-3 text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--background-subtle)] disabled:opacity-30 disabled:cursor-not-allowed`}
       >
-        Next →
+        <span>Next</span>
+        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+        </svg>
       </button>
     </nav>
   )

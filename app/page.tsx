@@ -17,7 +17,6 @@ interface HomePageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-// Inner component that reads searchParams via use()
 function HomeContent({ searchParams }: HomePageProps) {
   const resolvedParams = use(searchParams)
   const initialSearch = typeof resolvedParams.search === 'string' ? resolvedParams.search : ''
@@ -26,6 +25,7 @@ function HomeContent({ searchParams }: HomePageProps) {
   const [posts, setPosts] = useState<PostCardPost[]>([])
   const [page, setPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(1)
+  const [total, setTotal] = useState(0)
   const [searchQuery, setSearchQuery] = useState(initialSearch)
   const [inputValue, setInputValue] = useState(initialSearch)
   const [loading, setLoading] = useState(true)
@@ -39,9 +39,7 @@ function HomeContent({ searchParams }: HomePageProps) {
       const params = new URLSearchParams()
       params.set('page', String(currentPage))
       params.set('limit', '9')
-      if (query.trim()) {
-        params.set('search', query.trim())
-      }
+      if (query.trim()) params.set('search', query.trim())
 
       const res = await fetch(`/api/posts?${params.toString()}`)
       if (!res.ok) {
@@ -52,6 +50,7 @@ function HomeContent({ searchParams }: HomePageProps) {
       const data: PostsResponse = await res.json()
       setPosts(data.posts)
       setTotalPages(data.totalPages)
+      setTotal(data.total)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -59,7 +58,6 @@ function HomeContent({ searchParams }: HomePageProps) {
     }
   }, [])
 
-  // Fetch on mount and whenever page or searchQuery changes
   useEffect(() => {
     fetchPosts(searchQuery, page)
   }, [fetchPosts, searchQuery, page])
@@ -82,14 +80,19 @@ function HomeContent({ searchParams }: HomePageProps) {
   }
 
   return (
-    <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Page header */}
       <div className="mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[var(--foreground)] tracking-tight mb-1.5">
           Latest Posts
         </h1>
-        <p className="text-gray-500 dark:text-gray-400">
-          Discover stories, ideas, and expertise from our community of authors.
+        <p className="text-sm text-[var(--foreground-muted)]">
+          Discover stories, ideas, and expertise from our community.
+          {!loading && total > 0 && (
+            <span className="ml-1 text-[var(--foreground-subtle)]">
+              {total} post{total !== 1 ? 's' : ''}
+            </span>
+          )}
         </p>
       </div>
 
@@ -97,7 +100,7 @@ function HomeContent({ searchParams }: HomePageProps) {
       <form
         onSubmit={handleSearch}
         role="search"
-        className="mb-8 flex gap-2 w-full sm:max-w-xl"
+        className="mb-8 flex gap-2 w-full sm:max-w-lg"
       >
         <div className="relative flex-1">
           <label htmlFor="search-input" className="sr-only">
@@ -106,17 +109,12 @@ function HomeContent({ searchParams }: HomePageProps) {
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
             <svg
               aria-hidden="true"
-              className="h-4 w-4 text-gray-400"
+              className="h-4 w-4 text-[var(--foreground-subtle)]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
           <input
@@ -125,17 +123,12 @@ function HomeContent({ searchParams }: HomePageProps) {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Search posts…"
-            className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600
-              text-gray-900 dark:text-white bg-white dark:bg-gray-800
-              placeholder-gray-400 dark:placeholder-gray-500
-              focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-[var(--border)] text-sm text-[var(--foreground)] bg-[var(--surface)] placeholder-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent transition-all duration-150"
           />
         </div>
         <button
           type="submit"
-          className="px-4 py-2.5 rounded-lg text-sm font-medium text-white
-            bg-blue-600 hover:bg-blue-700
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          className="px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-[var(--brand)] hover:bg-[var(--brand-hover)] transition-colors duration-150 shadow-sm"
         >
           Search
         </button>
@@ -143,10 +136,7 @@ function HomeContent({ searchParams }: HomePageProps) {
           <button
             type="button"
             onClick={handleClearSearch}
-            className="px-4 py-2.5 rounded-lg text-sm font-medium
-              text-gray-700 dark:text-gray-300
-              bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600
-              focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors"
+            className="px-4 py-2.5 rounded-lg text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-[var(--background-subtle)] transition-colors duration-150"
           >
             Clear
           </button>
@@ -154,29 +144,35 @@ function HomeContent({ searchParams }: HomePageProps) {
       </form>
 
       {/* Active search indicator */}
-      {searchQuery && (
-        <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-          Showing results for{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">
+      {searchQuery && !loading && (
+        <p className="mb-5 text-sm text-[var(--foreground-muted)]">
+          Results for{' '}
+          <span className="font-semibold text-[var(--foreground)]">
             &ldquo;{searchQuery}&rdquo;
           </span>
+          {' '}— {total} post{total !== 1 ? 's' : ''} found
         </p>
       )}
 
-      {/* Content area */}
+      {/* Content */}
       {loading ? (
-        <div className="flex justify-center items-center py-24" aria-label="Loading posts">
+        <div className="flex justify-center items-center py-28" aria-label="Loading posts">
           <LoadingSpinner size="lg" />
         </div>
       ) : error ? (
         <div
           role="alert"
-          className="flex flex-col items-center justify-center py-16 text-center"
+          className="flex flex-col items-center justify-center py-20 text-center"
         >
-          <p className="text-red-600 dark:text-red-400 font-medium mb-2">{error}</p>
+          <div className="h-12 w-12 rounded-2xl bg-[var(--error-subtle)] border border-[var(--error)]/20 flex items-center justify-center mb-4">
+            <svg className="h-5 w-5 text-[var(--error)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-[var(--foreground)] mb-1">{error}</p>
           <button
             onClick={() => fetchPosts(searchQuery, page)}
-            className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            className="mt-2 text-sm font-medium text-[var(--brand)] hover:underline"
           >
             Try again
           </button>

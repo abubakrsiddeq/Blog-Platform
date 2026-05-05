@@ -27,12 +27,19 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
 
   if (!isAuthenticated) {
     return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-          Login
-        </Link>{' '}
-        to leave a comment.
-      </p>
+      <div className="flex items-center gap-3 p-4 rounded-xl bg-[var(--background-subtle)] border border-[var(--border)]">
+        <div className="h-8 w-8 rounded-full bg-[var(--border)] flex items-center justify-center shrink-0">
+          <svg className="h-4 w-4 text-[var(--foreground-subtle)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <p className="text-sm text-[var(--foreground-muted)]">
+          <Link href="/login" className="font-semibold text-[var(--brand)] hover:underline">
+            Sign in
+          </Link>{' '}
+          to leave a comment.
+        </p>
+      </div>
     )
   }
 
@@ -74,12 +81,12 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-3">
-      <div>
+      <div className="space-y-1.5">
         <label
           htmlFor="comment-content"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          className="block text-sm font-medium text-[var(--foreground)]"
         >
-          Add a comment
+          Leave a comment
         </label>
         <textarea
           id="comment-content"
@@ -90,29 +97,27 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
           aria-required="true"
           aria-describedby={contentError ? 'comment-error' : undefined}
           aria-invalid={!!contentError}
-          className={`w-full px-3 py-2 rounded-lg border text-gray-900 dark:text-white
-            bg-white dark:bg-gray-800 placeholder-gray-400 dark:placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y transition-colors
-            ${contentError ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'}`}
+          className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-[var(--foreground)] bg-[var(--surface)] placeholder-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent resize-y transition-all duration-150 ${
+            contentError ? 'border-[var(--error)]' : 'border-[var(--border)]'
+          }`}
         />
         {contentError && (
-          <p id="comment-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
+          <p id="comment-error" role="alert" className="text-xs text-[var(--error)]">
             {contentError}
           </p>
         )}
       </div>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
-          text-white bg-blue-600 hover:bg-blue-700
-          disabled:opacity-60 disabled:cursor-not-allowed
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-      >
-        {submitting && <LoadingSpinner size="sm" />}
-        Post Comment
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[var(--brand)] hover:bg-[var(--brand-hover)] disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150 shadow-sm"
+        >
+          {submitting && <LoadingSpinner size="sm" />}
+          {submitting ? 'Posting…' : 'Post comment'}
+        </button>
+      </div>
 
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />

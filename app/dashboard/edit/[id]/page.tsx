@@ -88,15 +88,20 @@ export default function EditPostPage({ params }: EditPostPageProps) {
 
   if (error) {
     return (
-      <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div
           role="alert"
-          className="flex flex-col items-center justify-center py-16 text-center"
+          className="flex flex-col items-center justify-center py-20 text-center"
         >
-          <p className="text-red-600 dark:text-red-400 font-medium mb-4">{error}</p>
+          <div className="h-12 w-12 rounded-2xl bg-[var(--error-subtle)] border border-[var(--error)]/20 flex items-center justify-center mb-4">
+            <svg className="h-5 w-5 text-[var(--error)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-[var(--foreground)] mb-1">{error}</p>
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            className="mt-2 text-sm font-medium text-[var(--brand)] hover:underline"
           >
             Back to Dashboard
           </button>
@@ -108,17 +113,17 @@ export default function EditPostPage({ params }: EditPostPageProps) {
   if (!post) return null
 
   return (
-    <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+    <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="mb-7">
+        <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
           Edit Post
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+        <p className="text-sm text-[var(--foreground-muted)] mt-0.5">
           Update your post content and settings.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 sm:p-7">
         <PostForm
           mode="edit"
           postId={post._id}

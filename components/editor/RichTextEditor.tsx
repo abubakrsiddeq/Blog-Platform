@@ -11,8 +11,6 @@ interface RichTextEditorProps {
   editable?: boolean
 }
 
-// ── Toolbar button ────────────────────────────────────────────────────────────
-
 interface ToolbarButtonProps {
   onClick: () => void
   isActive?: boolean
@@ -28,11 +26,11 @@ function ToolbarButton({ onClick, isActive, label, children }: ToolbarButtonProp
       aria-label={label}
       aria-pressed={isActive}
       className={`
-        px-2 py-1 rounded text-sm font-medium transition-colors
+        h-7 min-w-[1.75rem] px-2 rounded-md text-xs font-semibold transition-colors duration-150
         ${
           isActive
-            ? 'bg-blue-600 text-white'
-            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            ? 'bg-[var(--brand)] text-white shadow-sm'
+            : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--background-subtle)]'
         }
       `}
     >
@@ -40,8 +38,6 @@ function ToolbarButton({ onClick, isActive, label, children }: ToolbarButtonProp
     </button>
   )
 }
-
-// ── Main component ────────────────────────────────────────────────────────────
 
 export default function RichTextEditor({
   initialContent = '',
@@ -59,28 +55,26 @@ export default function RichTextEditor({
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML())
     },
-    // Avoid SSR mismatch — render immediately on client
     immediatelyRender: false,
   })
 
   if (!editor) return null
 
-  // Read-only mode: just render the content
   if (!editable) {
     return (
-      <div className="prose dark:prose-invert max-w-none">
+      <div className="prose max-w-none">
         <EditorContent editor={editor} />
       </div>
     )
   }
 
   return (
-    <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-900">
+    <div className="border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--surface)]">
       {/* Toolbar */}
       <div
         role="toolbar"
         aria-label="Text formatting"
-        className="flex flex-wrap gap-1 p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+        className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-[var(--border)] bg-[var(--background-subtle)]"
       >
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -106,7 +100,7 @@ export default function RichTextEditor({
           <span className="underline">U</span>
         </ToolbarButton>
 
-        <div className="w-px bg-gray-300 dark:bg-gray-600 mx-1" aria-hidden="true" />
+        <div className="w-px h-4 bg-[var(--border)] mx-1" aria-hidden="true" />
 
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -132,14 +126,14 @@ export default function RichTextEditor({
           H3
         </ToolbarButton>
 
-        <div className="w-px bg-gray-300 dark:bg-gray-600 mx-1" aria-hidden="true" />
+        <div className="w-px h-4 bg-[var(--border)] mx-1" aria-hidden="true" />
 
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           isActive={editor.isActive('bulletList')}
           label="Bullet list"
         >
-          • List
+          ≡
         </ToolbarButton>
 
         <ToolbarButton
@@ -147,7 +141,7 @@ export default function RichTextEditor({
           isActive={editor.isActive('orderedList')}
           label="Ordered list"
         >
-          1. List
+          1.
         </ToolbarButton>
 
         <ToolbarButton
@@ -159,8 +153,8 @@ export default function RichTextEditor({
         </ToolbarButton>
       </div>
 
-      {/* Editor content area */}
-      <div className="p-4 min-h-[200px] text-gray-900 dark:text-gray-100 [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[160px]">
+      {/* Editor content */}
+      <div className="px-4 py-3 min-h-[200px] text-[var(--foreground)] [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[160px] [&_.ProseMirror]:text-sm [&_.ProseMirror]:leading-relaxed">
         <EditorContent editor={editor} />
       </div>
     </div>

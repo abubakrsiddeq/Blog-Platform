@@ -100,15 +100,15 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
     }
   }
 
+  const inputBase =
+    'w-full px-3.5 py-2.5 rounded-lg border text-sm text-[var(--foreground)] bg-[var(--surface)] placeholder-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent transition-all duration-150'
+
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
       {/* Title */}
-      <div>
-        <label
-          htmlFor="post-title"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Title <span aria-hidden="true" className="text-red-500">*</span>
+      <div className="space-y-1.5">
+        <label htmlFor="post-title" className="block text-sm font-medium text-[var(--foreground)]">
+          Title <span aria-hidden="true" className="text-[var(--error)]">*</span>
         </label>
         <input
           id="post-title"
@@ -119,26 +119,23 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
           aria-required="true"
           aria-describedby={errors.title ? 'title-error' : undefined}
           aria-invalid={!!errors.title}
-          className={`w-full px-3 py-2 rounded-lg border text-gray-900 dark:text-white
-            bg-white dark:bg-gray-800 placeholder-gray-400 dark:placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors
-            ${errors.title ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'}`}
+          className={`${inputBase} text-base font-medium ${errors.title ? 'border-[var(--error)]' : 'border-[var(--border)]'}`}
         />
         {errors.title && (
-          <p id="title-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
+          <p id="title-error" role="alert" className="text-xs text-[var(--error)]">
             {errors.title}
           </p>
         )}
       </div>
 
       {/* Content */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Content <span aria-hidden="true" className="text-red-500">*</span>
+      <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-[var(--foreground)]">
+          Content <span aria-hidden="true" className="text-[var(--error)]">*</span>
         </label>
         <div
           aria-invalid={!!errors.content}
-          className={errors.content ? 'ring-2 ring-red-500 rounded-lg' : ''}
+          className={errors.content ? 'ring-2 ring-[var(--error)] rounded-xl' : ''}
         >
           <RichTextEditor
             initialContent={initialData?.content}
@@ -146,19 +143,17 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
           />
         </div>
         {errors.content && (
-          <p role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="text-xs text-[var(--error)]">
             {errors.content}
           </p>
         )}
       </div>
 
       {/* Image URL */}
-      <div>
-        <label
-          htmlFor="post-image"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Image URL <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span>
+      <div className="space-y-1.5">
+        <label htmlFor="post-image" className="block text-sm font-medium text-[var(--foreground)]">
+          Cover image URL{' '}
+          <span className="text-[var(--foreground-subtle)] font-normal">(optional)</span>
         </label>
         <input
           id="post-image"
@@ -166,57 +161,61 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
           value={image}
           onChange={(e) => setImage(e.target.value)}
           placeholder="https://example.com/image.jpg"
-          className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-            text-gray-900 dark:text-white bg-white dark:bg-gray-800
-            placeholder-gray-400 dark:placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+          className={`${inputBase} border-[var(--border)]`}
         />
       </div>
 
       {/* Status */}
-      <div>
-        <label
-          htmlFor="post-status"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
-          Status
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-[var(--foreground)]">
+          Visibility
         </label>
-        <select
-          id="post-status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
-          className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-            text-gray-900 dark:text-white bg-white dark:bg-gray-800
-            focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-        >
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-        </select>
+        <div className="flex gap-2">
+          {(['draft', 'published'] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setStatus(s)}
+              aria-pressed={status === s}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-all duration-150 ${
+                status === s
+                  ? s === 'published'
+                    ? 'border-[var(--success)] bg-[var(--success-subtle)] text-[var(--success)] ring-1 ring-[var(--success)]'
+                    : 'border-[var(--warning)] bg-[var(--warning-subtle)] text-[var(--warning)] ring-1 ring-[var(--warning)]'
+                  : 'border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-strong)] hover:bg-[var(--background-subtle)]'
+              }`}
+            >
+              {s === 'published' ? (
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
+                </svg>
+              ) : (
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              )}
+              {s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Submit */}
-      <div className="flex items-center gap-4 pt-2">
+      {/* Actions */}
+      <div className="flex items-center gap-3 pt-2 border-t border-[var(--border)]">
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium
-            text-white bg-blue-600 hover:bg-blue-700
-            disabled:opacity-60 disabled:cursor-not-allowed
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-[var(--brand)] hover:bg-[var(--brand-hover)] disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150 shadow-sm"
         >
           {submitting && <LoadingSpinner size="sm" />}
-          {mode === 'create' ? 'Create Post' : 'Update Post'}
+          {mode === 'create' ? 'Publish Post' : 'Save Changes'}
         </button>
 
         <button
           type="button"
           onClick={() => router.push('/dashboard')}
           disabled={submitting}
-          className="px-6 py-2.5 rounded-lg text-sm font-medium
-            text-gray-700 dark:text-gray-300
-            hover:bg-gray-100 dark:hover:bg-gray-700
-            disabled:opacity-60 disabled:cursor-not-allowed
-            focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors"
+          className="px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-[var(--background-subtle)] hover:text-[var(--foreground)] disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
         >
           Cancel
         </button>

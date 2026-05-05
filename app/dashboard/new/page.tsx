@@ -33,17 +33,17 @@ export default function NewPostPage() {
   }
 
   return (
-    <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-          Create New Post
+    <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="mb-7">
+        <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
+          New Post
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+        <p className="text-sm text-[var(--foreground-muted)] mt-0.5">
           Write and publish your post. Drafts are only visible to you.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 sm:p-7">
         <PostForm mode="create" />
       </div>
     </main>
