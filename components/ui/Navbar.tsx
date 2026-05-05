@@ -53,11 +53,10 @@ export default function Navbar() {
       style={
         scrolled
           ? {
-              background:
-                'linear-gradient(to right, rgba(var(--surface-rgb, 255,255,255), 0.85), rgba(var(--surface-rgb, 255,255,255), 0.85))',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              backgroundColor: 'color-mix(in srgb, var(--surface) 88%, transparent)',
+              backgroundColor: 'var(--surface)',
+              opacity: 0.95,
             }
           : { backgroundColor: 'var(--surface)' }
       }
