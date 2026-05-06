@@ -57,11 +57,6 @@ export default function PostDetail({ post }: PostDetailProps) {
     if (user) {
       setLiked(post.likes.includes(user.id))
     }
-  }, [user, post.likes])  // Once auth is resolved, check if the user already liked this post
-  useEffect(() => {
-    if (user) {
-      setLiked(post.likes.includes(user.id))
-    }
   }, [user, post.likes])
 
   const authorName = getAuthorName(post.author)

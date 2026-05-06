@@ -144,57 +144,58 @@ function HomeContent({ searchParams }: HomePageProps) {
           >
             <label htmlFor="search-input" className="sr-only">Search posts</label>
 
-            {/* Input row */}
-            <div className="relative flex items-center">
-              {/* Search icon */}
-              <div className="absolute left-4 flex items-center pointer-events-none z-10">
-                <svg
-                  aria-hidden="true"
-                  className="h-4 w-4 text-[var(--foreground-subtle)]"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            {/* Mobile: stacked layout | sm+: single inline row */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              {/* Input with search icon */}
+              <div className="relative flex-1">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none z-10">
+                  <svg
+                    aria-hidden="true"
+                    className="h-4 w-4 text-[var(--foreground-subtle)]"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  id="search-input"
+                  type="search"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Search posts, topics…"
+                  className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-2xl border border-[var(--border)]
+                             bg-[var(--surface)] text-sm text-[var(--foreground)]
+                             placeholder-[var(--foreground-subtle)]
+                             focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/50
+                             focus:border-[var(--brand)]/50
+                             shadow-[var(--shadow-md)] transition-all duration-200"
+                />
               </div>
 
-              <input
-                id="search-input"
-                type="search"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Search posts, topics…"
-                className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-2xl border border-[var(--border)]
-                           bg-[var(--surface)] text-sm text-[var(--foreground)]
-                           placeholder-[var(--foreground-subtle)]
-                           focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/50
-                           focus:border-[var(--brand)]/50
-                           shadow-[var(--shadow-md)] transition-all duration-200"
-              />
-            </div>
-
-            {/* Button row — always below input on mobile, saves space */}
-            <div className="flex items-center gap-2 mt-2">
-              <button
-                type="submit"
-                className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold text-white
-                           bg-[var(--brand)] hover:bg-[var(--brand-hover)]
-                           transition-colors duration-150 shadow-sm glow-brand-sm"
-              >
-                Search
-              </button>
-              {searchQuery && (
+              {/* Buttons — beside input on sm+, below on mobile */}
+              <div className="flex items-center gap-2">
                 <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium
-                             text-[var(--foreground-muted)] border border-[var(--border)]
-                             hover:text-[var(--foreground)] hover:bg-[var(--background-subtle)]
-                             transition-colors duration-150"
+                  type="submit"
+                  className="flex-1 sm:flex-none px-5 py-3 sm:py-3.5 rounded-2xl text-sm font-semibold text-white
+                             bg-[var(--brand)] hover:bg-[var(--brand-hover)]
+                             transition-colors duration-150 shadow-sm glow-brand-sm whitespace-nowrap"
                 >
-                  Clear
+                  Search
                 </button>
-              )}
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="flex-1 sm:flex-none px-4 py-3 sm:py-3.5 rounded-2xl text-sm font-medium
+                               text-[var(--foreground-muted)] border border-[var(--border)]
+                               hover:text-[var(--foreground)] hover:bg-[var(--background-subtle)]
+                               transition-colors duration-150 whitespace-nowrap"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
           </form>
 

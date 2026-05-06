@@ -5,6 +5,9 @@ import CommentForm from '@/components/comments/CommentForm'
 import { getPostById } from '@/lib/services/postService'
 import { getCommentsByPost } from '@/lib/services/commentService'
 
+// Always fetch fresh data — posts can be published/updated at any time
+export const dynamic = 'force-dynamic'
+
 interface PostDetailPageProps {
   params: Promise<{ id: string }>
 }
@@ -33,14 +36,16 @@ async function getPost(id: string): Promise<PostData | null> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return JSON.parse(JSON.stringify(post)) as PostData
   } catch (err: unknown) {
+    // Known "not found" or "forbidden" → show 404 page
     if (
       err !== null &&
       typeof err === 'object' &&
-      'code' in err &&
-      ((err as { code: string }).code === 'NOT_FOUND' ||
-        (err as { code: string }).code === 'FORBIDDEN')
+      'code' in err
     ) {
-      return null
+      const code = (err as { code: string }).code
+      if (code === 'NOT_FOUND' || code === 'FORBIDDEN') {
+        return null
+      }
     }
     // CastError (invalid ObjectId) → treat as not found
     if (
@@ -51,7 +56,9 @@ async function getPost(id: string): Promise<PostData | null> {
     ) {
       return null
     }
-    return null
+    // Any other error (DB connection failure, etc.) → re-throw so Next.js
+    // renders the error boundary instead of silently showing a 404
+    throw err
   }
 }
 
