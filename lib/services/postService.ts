@@ -6,22 +6,12 @@ import type { CreatePostInput, UpdatePostInput } from '@/lib/validation/postSche
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/**
- * Strips HTML tags from a string and returns plain text.
- * Used to generate the excerpt from sanitised HTML content.
- */
 function stripHTML(html: string): string {
   return html.replace(/<[^>]*>/g, '');
 }
 
 // ─── createPost ───────────────────────────────────────────────────────────────
 
-/**
- * Creates a new blog post owned by the given author.
- * Sanitises HTML content and auto-generates a plain-text excerpt.
- *
- * Requirements: 5.1, 5.4, 17.3
- */
 export async function createPost(
   data: CreatePostInput,
   authorId: string,
@@ -45,12 +35,6 @@ export async function createPost(
 
 // ─── listPosts ────────────────────────────────────────────────────────────────
 
-/**
- * Returns a paginated list of published posts ordered by creation date
- * descending, with the author's name populated.
- *
- * Requirements: 6.1, 6.3
- */
 export async function listPosts(
   page: number,
   limit: number,
@@ -86,12 +70,6 @@ export async function listPosts(
 
 // ─── listPostsByAuthor ────────────────────────────────────────────────────────
 
-/**
- * Returns all posts (draft + published) owned by the given author, ordered by
- * creation date descending. Used by the author dashboard.
- *
- * Requirements: 12.1
- */
 export async function listPostsByAuthor(
   authorId: string,
   page: number,
@@ -128,13 +106,6 @@ export async function listPostsByAuthor(
 
 // ─── searchPostsByAuthor ──────────────────────────────────────────────────────
 
-/**
- * Full-text search over all posts (draft + published) owned by the given author.
- * Falls back to a case-insensitive regex title/excerpt match when the $text
- * index returns no results (e.g. single-character queries).
- *
- * Requirements: 12.1
- */
 export async function searchPostsByAuthor(
   authorId: string,
   query: string,
@@ -151,9 +122,8 @@ export async function searchPostsByAuthor(
 
   const skip = (page - 1) * limit;
 
-  // Use regex search on title and excerpt — works for all query lengths
-  // and doesn't require the $text index (which only matches whole words).
-  const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+  const regex = new RegExp(escaped, 'i');
   const filter = {
     author: authorId,
     $or: [{ title: regex }, { excerpt: regex }, { content: regex }],
@@ -179,14 +149,6 @@ export async function searchPostsByAuthor(
 
 // ─── getPostById ──────────────────────────────────────────────────────────────
 
-/**
- * Retrieves a single post by ID, populating the author's name.
- * Throws { code: 'NOT_FOUND' } if the post does not exist.
- * Throws { code: 'FORBIDDEN' } if the post is a draft and the requesting user
- * is not the author.
- *
- * Requirements: 6.4, 6.5, 6.6
- */
 export async function getPostById(
   postId: string,
   requestingUserId?: string,
@@ -211,13 +173,6 @@ export async function getPostById(
 
 // ─── updatePost ───────────────────────────────────────────────────────────────
 
-/**
- * Updates a post owned by the requesting user.
- * Throws { code: 'NOT_FOUND' } if the post does not exist.
- * Throws { code: 'FORBIDDEN' } if the requesting user is not the author.
- *
- * Requirements: 7.1, 7.2, 7.4, 17.3
- */
 export async function updatePost(
   postId: string,
   data: UpdatePostInput,
@@ -254,8 +209,6 @@ export async function updatePost(
 
   const updated = await Post.findByIdAndUpdate(postId, updateData, { new: true });
 
-  // findByIdAndUpdate returns null only if the document was deleted between the
-  // findById check above and this call — treat it as NOT_FOUND.
   if (!updated) {
     throw { code: 'NOT_FOUND' };
   }
@@ -265,13 +218,6 @@ export async function updatePost(
 
 // ─── deletePost ───────────────────────────────────────────────────────────────
 
-/**
- * Deletes a post owned by the requesting user.
- * Throws { code: 'NOT_FOUND' } if the post does not exist.
- * Throws { code: 'FORBIDDEN' } if the requesting user is not the author.
- *
- * Requirements: 8.1, 8.2, 8.4
- */
 export async function deletePost(
   postId: string,
   requestingUserId: string,

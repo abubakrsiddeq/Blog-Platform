@@ -25,7 +25,7 @@ export async function searchPosts(
   await connectDB();
 
   // Escape special regex characters in the user query
-  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
   const regex = new RegExp(escaped, 'i');
 
   const filter = {

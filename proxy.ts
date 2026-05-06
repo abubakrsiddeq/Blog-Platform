@@ -71,7 +71,7 @@ function isPublicRoute(method: string, pathname: string): boolean {
  *  5. If valid, attach x-user-id and x-user-role request headers.
  *  6. If the route is author-only and the user is a reader → 403 Forbidden.
  */
-export function middleware(request: NextRequest): NextResponse {
+export function proxy(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
   const { method } = request;
 
