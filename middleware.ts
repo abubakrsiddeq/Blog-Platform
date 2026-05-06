@@ -24,6 +24,10 @@ function isAuthorOnlyRoute(method: string, pathname: string): boolean {
     return true;
   }
 
+  if (method === 'POST' && pathname === '/api/ai/generate') {
+    return true;
+  }
+
   return false;
 }
 
@@ -67,7 +71,7 @@ function isPublicRoute(method: string, pathname: string): boolean {
  *  5. If valid, attach x-user-id and x-user-role request headers.
  *  6. If the route is author-only and the user is a reader → 403 Forbidden.
  */
-export function proxy(request: NextRequest): NextResponse {
+export function middleware(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
   const { method } = request;
 
@@ -122,6 +126,7 @@ export const config = {
     '/api/posts/:path*',
     '/api/comments/:path*',
     '/api/upload/:path*',
+    '/api/ai/:path*',
     '/dashboard/:path*',
   ],
 };

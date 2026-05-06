@@ -6,6 +6,7 @@ import Image from 'next/image'
 import RichTextEditor from '@/components/editor/RichTextEditor'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import Toast from '@/components/ui/Toast'
+import AIAssistant from '@/components/posts/AIAssistant'
 
 interface PostFormInitialData {
   title: string
@@ -241,6 +242,19 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [toast, setToast]   = useState<ToastState | null>(null)
+  const [editorKey, setEditorKey] = useState(0)
+
+  function handleAIGenerate(result: { title: string; content: string }) {
+    setTitle(result.title)
+    setContent(result.content)
+    setEditorKey(prev => prev + 1)
+    setErrors(prev => {
+      const next = { ...prev }
+      delete next.title
+      delete next.content
+      return next
+    })
+  }
 
   function validate(): boolean {
     const e: FormErrors = {}
@@ -303,6 +317,9 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
 
+      {/* AI Writing Assistant */}
+      <AIAssistant onGenerate={handleAIGenerate} disabled={submitting} />
+
       {/* Title */}
       <div className="space-y-1.5">
         <label htmlFor="post-title" className="block text-sm font-medium text-[var(--foreground)]">
@@ -342,7 +359,8 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
           className={errors.content ? 'ring-2 ring-[var(--error)] rounded-xl' : ''}
         >
           <RichTextEditor
-            initialContent={initialData?.content}
+            key={editorKey}
+            initialContent={content}
             onChange={html => setContent(html)}
           />
         </div>

@@ -6,6 +6,36 @@ A full-stack blog platform built with Next.js 16, MongoDB, and Tailwind CSS v4. 
 
 ---
 
+## ✨ BKR AI Assistant
+
+> **BKR AI Assistant** is the built-in AI writing companion for BKR Blog Platform — powered by OpenAI.
+
+Authors can describe any topic in plain language and **BKR AI Assistant** will instantly generate a complete blog post — title and rich-text content — directly inside the post editor. No copy-pasting, no tab-switching. Just write a prompt, hit **Generate**, and your draft is ready to review and publish.
+
+### What BKR AI Assistant can do
+
+| Capability | Detail |
+|---|---|
+| 📝 Title generation | Produces a relevant, engaging post title from your prompt |
+| 📄 Content generation | Writes a full rich-text article body, ready in the Tiptap editor |
+| ⚡ One-click workflow | Injects content directly into the form — edit and publish immediately |
+| 🔒 Secure by design | OpenAI API key stays server-side only, never exposed to the browser |
+| 🛡️ Role-gated | Only authenticated `author` accounts can invoke the AI |
+| ⏱️ Timeout protection | 30-second server-side timeout with clear user feedback |
+| 🔄 Error recovery | Inline error messages with the ability to retry without a page reload |
+
+### How to use BKR AI Assistant
+
+1. Open **New Post** or **Edit Post** from your author dashboard.
+2. Find the **BKR AI Assistant** panel at the top of the form.
+3. Type a prompt — e.g. *"Write a beginner's guide to TypeScript generics"*.
+4. Click **Generate** and wait a moment.
+5. Your title and content are auto-filled. Edit freely, then publish.
+
+> **Requires** `OPENAI_API_KEY` to be set in your environment variables (see [Environment Variables](#environment-variables)).
+
+---
+
 ## Features
 
 - **Authentication** — JWT-based register/login/logout with httpOnly cookies, bcrypt password hashing
@@ -19,6 +49,7 @@ A full-stack blog platform built with Next.js 16, MongoDB, and Tailwind CSS v4. 
 - **Dark mode** — System-aware with manual toggle
 - **Input validation** — Zod schemas on all API routes
 - **HTML sanitisation** — sanitize-html on all rich text content
+- **BKR AI Assistant** — Generate post titles and content from a prompt using OpenAI (see [BKR AI Assistant](#-bkr-ai-assistant))
 
 ---
 
@@ -64,7 +95,10 @@ JWT_SECRET=your_jwt_secret_key
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+OPENAI_API_KEY=your_openai_api_key
 ```
+
+> **AI Writing Assistant:** `OPENAI_API_KEY` must be set to a valid OpenAI API key for the AI Writing Assistant feature to function. Without it, the `/api/ai/generate` endpoint will return a 500 error.
 
 ### Run Locally
 
