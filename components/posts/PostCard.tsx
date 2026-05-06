@@ -142,7 +142,7 @@ function HeroCard({ post }: { post: PostCardPost }) {
   const excerpt     = post.excerpt ? truncate(post.excerpt, 180) : null
 
   return (
-    <article className="group relative w-full rounded-3xl overflow-hidden" style={{ minHeight: 480 }}>
+    <article className="group relative w-full rounded-2xl sm:rounded-3xl overflow-hidden" style={{ minHeight: 'clamp(280px, 50vw, 480px)' }}>
       {/* ── Background image / placeholder ── */}
       <div className="absolute inset-0">
         {post.image ? (
@@ -170,16 +170,16 @@ function HeroCard({ post }: { post: PostCardPost }) {
 
       {/* ── Border glow ring ── */}
       <div
-        className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        className="absolute inset-0 rounded-2xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{ boxShadow: `inset 0 0 0 1.5px ${accent.a}60, 0 0 40px ${accent.a}25` }}
       />
 
       {/* ── Content ── */}
-      <div className="relative h-full flex flex-col justify-end p-7 sm:p-10" style={{ minHeight: 480 }}>
+      <div className="relative h-full flex flex-col justify-end p-5 sm:p-7 lg:p-10" style={{ minHeight: 'clamp(280px, 50vw, 480px)' }}>
         {/* Top row badges */}
-        <div className="absolute top-6 left-7 sm:left-10 flex items-center gap-2">
+        <div className="absolute top-4 left-5 sm:top-6 sm:left-7 lg:left-10 flex items-center gap-2">
           <span
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur-sm"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur-sm"
             style={{ background: `linear-gradient(90deg, ${accent.a}cc, ${accent.b}cc)` }}
           >
             <span className="relative flex h-1.5 w-1.5">
@@ -197,7 +197,7 @@ function HeroCard({ post }: { post: PostCardPost }) {
 
         {/* Title */}
         <Link href={`/posts/${post._id}`}>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-3
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-2 sm:mb-3
                          group-hover:text-white transition-colors duration-200 line-clamp-3
                          [text-shadow:0_2px_20px_rgba(0,0,0,0.5)]">
             {post.title}
@@ -206,7 +206,7 @@ function HeroCard({ post }: { post: PostCardPost }) {
 
         {/* Excerpt */}
         {excerpt && (
-          <p className="text-sm sm:text-base text-white/70 leading-relaxed line-clamp-2 mb-5 max-w-2xl">
+          <p className="hidden sm:block text-sm sm:text-base text-white/70 leading-relaxed line-clamp-2 mb-4 sm:mb-5 max-w-2xl">
             {excerpt}
           </p>
         )}

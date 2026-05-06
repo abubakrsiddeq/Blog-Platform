@@ -355,7 +355,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Search bar */}
-        <form onSubmit={handleSearch} role="search" className="flex gap-2">
+        <form onSubmit={handleSearch} role="search" className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <label htmlFor="search-input" className="sr-only">Search your posts</label>
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -382,25 +382,27 @@ export default function DashboardPage() {
                          shadow-[var(--shadow-sm)] transition-all duration-200"
             />
           </div>
-          <button
-            type="submit"
-            className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white
-                       bg-[var(--brand)] hover:bg-[var(--brand-hover)]
-                       transition-colors duration-150 shadow-sm"
-          >
-            Search
-          </button>
-          {searchQuery && (
+          <div className="flex gap-2">
             <button
-              type="button"
-              onClick={handleClearSearch}
-              className="px-4 py-2.5 rounded-xl text-sm font-medium
-                         text-[var(--foreground-muted)] border border-[var(--border)]
-                         hover:bg-[var(--background-subtle)] transition-colors duration-150"
+              type="submit"
+              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-semibold text-white
+                         bg-[var(--brand)] hover:bg-[var(--brand-hover)]
+                         transition-colors duration-150 shadow-sm"
             >
-              Clear
+              Search
             </button>
-          )}
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium
+                           text-[var(--foreground-muted)] border border-[var(--border)]
+                           hover:bg-[var(--background-subtle)] transition-colors duration-150"
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </form>
 
         {/* Active search indicator */}

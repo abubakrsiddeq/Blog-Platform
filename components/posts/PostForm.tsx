@@ -405,11 +405,11 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-3 pt-2 border-t border-[var(--border)]">
+      <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-[var(--border)]">
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold
+          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold
                      text-white bg-[var(--brand)] hover:bg-[var(--brand-hover)]
                      disabled:opacity-60 disabled:cursor-not-allowed
                      transition-colors duration-150 shadow-sm"
@@ -422,7 +422,7 @@ export default function PostForm({ mode, initialData, postId, onSuccess }: PostF
           type="button"
           onClick={() => router.push('/dashboard')}
           disabled={submitting}
-          className="px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--foreground-muted)]
+          className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--foreground-muted)]
                      border border-[var(--border)] hover:bg-[var(--background-subtle)]
                      hover:text-[var(--foreground)] disabled:opacity-60 disabled:cursor-not-allowed
                      transition-colors duration-150"

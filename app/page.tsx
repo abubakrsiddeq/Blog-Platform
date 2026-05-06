@@ -102,10 +102,10 @@ function HomeContent({ searchParams }: HomePageProps) {
         />
 
         {/* Content */}
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-12 sm:pb-16 text-center">
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--brand)]/30 bg-[var(--brand)]/5 text-xs font-medium text-[var(--brand)] mb-6 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--brand)]/30 bg-[var(--brand)]/5 text-xs font-medium text-[var(--brand)] mb-5 animate-fade-in">
             <span className="relative flex h-1.5 w-1.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--brand)] opacity-75" />
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[var(--brand)]" />
@@ -115,7 +115,7 @@ function HomeContent({ searchParams }: HomePageProps) {
 
           {/* Headline */}
           <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5 animate-slide-up"
+            className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 sm:mb-5 animate-slide-up"
             style={{ animationDelay: '60ms' }}
           >
             <span className="text-[var(--foreground)]">Explore the </span>
@@ -124,7 +124,7 @@ function HomeContent({ searchParams }: HomePageProps) {
 
           {/* Sub-headline */}
           <p
-            className="text-base sm:text-lg text-[var(--foreground-muted)] max-w-xl mx-auto mb-10 leading-relaxed animate-slide-up"
+            className="text-sm sm:text-lg text-[var(--foreground-muted)] max-w-xl mx-auto mb-8 sm:mb-10 leading-relaxed animate-slide-up"
             style={{ animationDelay: '120ms' }}
           >
             Discover stories, deep dives, and expertise from writers shaping tomorrow.
@@ -135,67 +135,66 @@ function HomeContent({ searchParams }: HomePageProps) {
             )}
           </p>
 
-          {/* Search bar */}
+          {/* Search bar — stacked on mobile, inline on sm+ */}
           <form
             onSubmit={handleSearch}
             role="search"
-            className="relative flex items-center max-w-xl mx-auto animate-slide-up"
+            className="max-w-xl mx-auto animate-slide-up"
             style={{ animationDelay: '180ms' }}
           >
-            {/* Glow ring */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 rounded-2xl bg-[var(--brand)]/20 blur-md -z-10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"
-            />
-
             <label htmlFor="search-input" className="sr-only">Search posts</label>
 
-            {/* Search icon */}
-            <div className="absolute left-4 flex items-center pointer-events-none">
-              <svg
-                aria-hidden="true"
-                className="h-4 w-4 text-[var(--foreground-subtle)]"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+            {/* Input row */}
+            <div className="relative flex items-center">
+              {/* Search icon */}
+              <div className="absolute left-4 flex items-center pointer-events-none z-10">
+                <svg
+                  aria-hidden="true"
+                  className="h-4 w-4 text-[var(--foreground-subtle)]"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+
+              <input
+                id="search-input"
+                type="search"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Search posts, topics…"
+                className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-2xl border border-[var(--border)]
+                           bg-[var(--surface)] text-sm text-[var(--foreground)]
+                           placeholder-[var(--foreground-subtle)]
+                           focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/50
+                           focus:border-[var(--brand)]/50
+                           shadow-[var(--shadow-md)] transition-all duration-200"
+              />
             </div>
 
-            <input
-              id="search-input"
-              type="search"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Search posts, topics, authors…"
-              className="w-full pl-11 pr-36 py-3.5 rounded-2xl border border-[var(--border)]
-                         bg-[var(--surface)] text-sm text-[var(--foreground)]
-                         placeholder-[var(--foreground-subtle)]
-                         focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/50
-                         focus:border-[var(--brand)]/50
-                         shadow-[var(--shadow-md)] transition-all duration-200"
-            />
-
-            <div className="absolute right-2 flex items-center gap-1.5">
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="px-3 py-1.5 rounded-xl text-xs font-medium
-                             text-[var(--foreground-muted)] hover:text-[var(--foreground)]
-                             hover:bg-[var(--background-subtle)] transition-colors duration-150"
-                >
-                  Clear
-                </button>
-              )}
+            {/* Button row — always below input on mobile, saves space */}
+            <div className="flex items-center gap-2 mt-2">
               <button
                 type="submit"
-                className="px-4 py-1.5 rounded-xl text-sm font-semibold text-white
+                className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold text-white
                            bg-[var(--brand)] hover:bg-[var(--brand-hover)]
                            transition-colors duration-150 shadow-sm glow-brand-sm"
               >
                 Search
               </button>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium
+                             text-[var(--foreground-muted)] border border-[var(--border)]
+                             hover:text-[var(--foreground)] hover:bg-[var(--background-subtle)]
+                             transition-colors duration-150"
+                >
+                  Clear
+                </button>
+              )}
             </div>
           </form>
 

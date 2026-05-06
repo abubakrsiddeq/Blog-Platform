@@ -102,8 +102,8 @@ export default function PostDetail({ post }: PostDetailProps) {
     <article>
       {/* ── Hero image ─────────────────────────────────────────────────── */}
       {post.image && (
-        <div className="relative w-full rounded-3xl overflow-hidden mb-10 bg-[var(--background-subtle)]"
-          style={{ paddingBottom: '42%' }}>
+        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden mb-8 sm:mb-10 bg-[var(--background-subtle)]"
+          style={{ paddingBottom: 'clamp(52%, 42%, 42%)' }}>
           <Image
             src={post.image}
             alt={`Cover image for ${post.title}`}
@@ -118,8 +118,8 @@ export default function PostDetail({ post }: PostDetailProps) {
       )}
 
       {/* ── Title ──────────────────────────────────────────────────────── */}
-      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--foreground)]
-                     leading-tight tracking-tight mb-6">
+      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--foreground)]
+                     leading-tight tracking-tight mb-5 sm:mb-6">
         {post.title}
       </h1>
 

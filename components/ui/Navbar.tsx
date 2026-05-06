@@ -56,7 +56,7 @@ export default function Navbar() {
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               backgroundColor: 'var(--surface)',
-              opacity: 0.95,
+              opacity: 0.97,
             }
           : { backgroundColor: 'var(--surface)' }
       }
@@ -74,16 +74,16 @@ export default function Navbar() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-14 sm:h-16">
 
           {/* ── Logo ── */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 group"
-            aria-label="Blog Platform home"
+            className="flex items-center gap-2.5 group min-w-0"
+            aria-label="BKR Blog Platform home"
           >
             <div
-              className="h-8 w-8 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200"
+              className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200"
               style={{
                 background: 'linear-gradient(135deg, var(--brand) 0%, #a78bfa 100%)',
                 boxShadow: '0 0 12px rgba(99,102,241,0.35)',
@@ -94,9 +94,15 @@ export default function Navbar() {
                   d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
             </div>
-            <span className="text-sm font-bold tracking-tight text-gradient hidden sm:block">
-              BKR Blog Platform
-            </span>
+            {/* Always visible — "BKR Blog" on one line, "Platform" subtitle below */}
+            <div className="flex flex-col leading-tight min-w-0">
+              <span className="text-[13px] sm:text-sm font-extrabold tracking-tight text-gradient whitespace-nowrap">
+                BKR Blog Platform
+              </span>
+              <span className="text-[9px] font-semibold tracking-[0.18em] uppercase text-[var(--foreground-muted)] whitespace-nowrap">
+                Est. 2024
+              </span>
+            </div>
           </Link>
 
           {/* ── Desktop nav ── */}
@@ -140,7 +146,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* ── Mobile: dark mode + hamburger ── */}
+          {/* ── Mobile: profile + dark mode + hamburger ── */}
           <div className="flex md:hidden items-center gap-1">
             {!loading && user && <ProfileDropdown />}
             <DarkModeToggle />
@@ -178,24 +184,33 @@ export default function Navbar() {
                       Dashboard
                     </MobileNavLink>
                   )}
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center px-3 py-2 rounded-xl text-sm font-medium text-[var(--error)] hover:bg-[var(--error-subtle)] transition-colors"
-                  >
-                    Sign out
-                  </button>
+                  <div className="pt-1 mt-1 border-t border-[var(--border)]">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--error)] hover:bg-[var(--error-subtle)] transition-colors"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                          d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                      </svg>
+                      Sign out
+                    </button>
+                  </div>
                 </>
               ) : (
-                <>
+                <div className="pt-1 mt-1 border-t border-[var(--border)] space-y-1">
                   <MobileNavLink href="/login" active={isActive('/login')}>Sign in</MobileNavLink>
                   <Link
                     href="/register"
-                    className="flex items-center justify-center px-3 py-2 rounded-xl text-sm font-semibold text-white transition-colors"
+                    className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
                     style={{ background: 'linear-gradient(135deg, var(--brand) 0%, #a78bfa 100%)' }}
                   >
                     Get started
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
                   </Link>
-                </>
+                </div>
               )}
             </>
           )}
