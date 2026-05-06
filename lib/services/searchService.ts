@@ -2,6 +2,9 @@ import { Post } from '@/models/Post';
 import type { IPost } from '@/models/Post';
 import { connectDB } from '@/lib/db';
 
+// Ensure User schema is registered before .populate('author') calls
+import '@/models/User';
+
 // ─── searchPosts ──────────────────────────────────────────────────────────────
 
 /**

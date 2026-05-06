@@ -4,6 +4,10 @@ import { connectDB } from '@/lib/db';
 import { sanitiseHTML } from '@/lib/sanitise';
 import type { CreatePostInput, UpdatePostInput } from '@/lib/validation/postSchemas';
 
+// Importing User ensures its schema is registered with Mongoose before any
+// .populate('author') call — without this import Mongoose throws MissingSchemaError.
+import '@/models/User';
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function stripHTML(html: string): string {

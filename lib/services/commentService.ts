@@ -4,6 +4,9 @@ import { Post } from '@/models/Post';
 import { connectDB } from '@/lib/db';
 import type { CreateCommentInput } from '@/lib/validation/commentSchemas';
 
+// Ensure User schema is registered before .populate('user') calls
+import '@/models/User';
+
 // ─── createComment ────────────────────────────────────────────────────────────
 
 /**
