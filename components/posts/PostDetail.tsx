@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useAuth } from '@/components/providers/AuthProvider'
 import Toast from '@/components/ui/Toast'
+import { fetchWithRetry } from '@/lib/fetchWithRetry'
 
 interface PostDetailPost {
   _id: string
@@ -73,7 +74,7 @@ export default function PostDetail({ post }: PostDetailProps) {
     setLiked(v => !v)
     setIsLiking(true)
     try {
-      const res = await fetch(`/api/posts/${post._id}/like`, { method: 'POST' })
+      const res = await fetchWithRetry(`/api/posts/${post._id}/like`, { method: 'POST' })
       if (!res.ok) {
         setLikeCount(prevCount)
         setLiked(prevLiked)

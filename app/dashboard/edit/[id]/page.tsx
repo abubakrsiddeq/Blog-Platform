@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import PostForm from '@/components/posts/PostForm'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { fetchWithRetry } from '@/lib/fetchWithRetry'
 
 interface EditPostPageProps {
   params: Promise<{ id: string }>
@@ -47,7 +48,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
       setError(null)
 
       try {
-        const res = await fetch(`/api/posts/${id}`)
+        const res = await fetchWithRetry(`/api/posts/${id}`)
         if (res.status === 404) {
           setError('Post not found.')
           return

@@ -8,6 +8,7 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import Toast from '@/components/ui/Toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { fetchWithRetry } from '@/lib/fetchWithRetry'
 import Pagination from '@/components/ui/Pagination'
 
 interface DashboardPost {
@@ -255,7 +256,7 @@ export default function DashboardPage() {
       params.set('limit', '10')
       if (query.trim()) params.set('search', query.trim())
 
-      const res = await fetch(`/api/posts?${params.toString()}`)
+      const res = await fetchWithRetry(`/api/posts?${params.toString()}`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         throw new Error(data.error ?? 'Failed to load posts')

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/components/providers/AuthProvider'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import Toast from '@/components/ui/Toast'
+import { fetchWithRetry } from '@/lib/fetchWithRetry'
 
 interface CommentFormProps {
   postId: string
@@ -71,7 +72,7 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
     setSubmitting(true)
     setToast(null)
     try {
-      const res = await fetch('/api/comments', {
+      const res = await fetchWithRetry('/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ postId, content: content.trim() }),

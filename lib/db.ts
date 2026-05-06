@@ -14,6 +14,9 @@ const cached = global.__mongoose ?? (global.__mongoose = { conn: null, promise: 
  *
  * On Vercel serverless, each cold start gets a fresh process so we always
  * create a new connection on the first invocation of that instance.
+ *
+ * The promise is set BEFORE awaiting so concurrent cold-start callers all
+ * share the same in-flight connect() rather than each spawning their own.
  */
 export async function connectDB(): Promise<typeof mongoose> {
   const MONGO_URI = process.env.MONGO_URI;
@@ -27,8 +30,9 @@ export async function connectDB(): Promise<typeof mongoose> {
     return cached.conn;
   }
 
-  // If the previous promise failed or the connection dropped, reset so we
-  // create a fresh connection rather than awaiting a dead promise.
+  // If there is already an in-flight promise, wait for it.
+  // This prevents multiple concurrent cold-start requests from each calling
+  // mongoose.connect() simultaneously.
   if (cached.promise) {
     try {
       cached.conn = await cached.promise;
@@ -36,23 +40,31 @@ export async function connectDB(): Promise<typeof mongoose> {
         return cached.conn;
       }
     } catch {
-      // Previous connection attempt failed — fall through to retry.
+      // Previous connection attempt failed — reset and retry below.
     }
     cached.conn = null;
     cached.promise = null;
   }
 
-  // Create a new connection promise and cache it so concurrent callers
-  // share the same in-flight promise.
+  // Set the promise FIRST (before awaiting) so any concurrent requests that
+  // arrive while we are connecting will reuse this same promise.
   cached.promise = mongoose.connect(MONGO_URI, {
-    // bufferCommands: true (default) lets Mongoose queue operations while
-    // connecting, which is safer on serverless cold starts.
-    bufferCommands: true,
+    bufferCommands: true,   // queue ops while connecting — safe on serverless
     maxPoolSize: 10,
-    serverSelectionTimeoutMS: 10000,
+    serverSelectionTimeoutMS: 30000,  // 30 s — enough for Vercel cold starts
     socketTimeoutMS: 45000,
+    connectTimeoutMS: 30000,
   });
 
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (err) {
+    // Reset so the next request tries a fresh connect instead of awaiting
+    // a permanently-rejected promise.
+    cached.promise = null;
+    cached.conn = null;
+    throw err;
+  }
+
   return cached.conn;
 }

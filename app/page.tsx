@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, use } from 'react'
 import PostList from '@/components/posts/PostList'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { fetchWithRetry } from '@/lib/fetchWithRetry'
 import type { PostCardPost } from '@/components/posts/PostCard'
 
 interface PostsResponse {
@@ -39,7 +40,7 @@ function HomeContent({ searchParams }: HomePageProps) {
       params.set('page', String(currentPage))
       params.set('limit', '9')
       if (query.trim()) params.set('search', query.trim())
-      const res = await fetch(`/api/posts?${params.toString()}`)
+      const res = await fetchWithRetry(`/api/posts?${params.toString()}`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         throw new Error(data.error ?? 'Failed to load posts')
