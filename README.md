@@ -1,4 +1,4 @@
-# BKR Blog Platform
+# BKR Blog Platform 
 
 A full-stack blog platform built with Next.js 16, MongoDB, and Tailwind CSS v4. Supports two user roles — authors who create and manage posts, and readers who can like and comment.
 
