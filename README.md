@@ -4,7 +4,7 @@ A full-stack blog platform built with Next.js 16, MongoDB, and Tailwind CSS v4. 
 
 **Live Demo → [https://blog-platform-uptech.vercel.app](https://blog-platform-uptech.vercel.app)**
 
----
+--- 
 
 ## ✨ BKR AI Assistant
 
